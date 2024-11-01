@@ -32,13 +32,13 @@
             path = new TextBox();
             load = new Button();
             browseButton = new Button();
-            trackBar1 = new TrackBar();
+            imageSlider = new TrackBar();
             canvas = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)trackBar1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)imageSlider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)canvas).BeginInit();
             SuspendLayout();
             // 
@@ -57,7 +57,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(trackBar1);
+            splitContainer1.Panel2.Controls.Add(imageSlider);
             splitContainer1.Panel2.Controls.Add(canvas);
             splitContainer1.Panel2.Paint += splitContainer1_Panel2_Paint;
             splitContainer1.Size = new Size(800, 450);
@@ -93,16 +93,17 @@
             browseButton.UseVisualStyleBackColor = true;
             browseButton.Click += browseButton_Click;
             // 
-            // trackBar1
+            // imageSlider
             // 
-            trackBar1.AutoSize = false;
-            trackBar1.BackColor = SystemColors.Control;
-            trackBar1.Location = new Point(462, 23);
-            trackBar1.Name = "trackBar1";
-            trackBar1.Orientation = Orientation.Vertical;
-            trackBar1.RightToLeft = RightToLeft.Yes;
-            trackBar1.Size = new Size(56, 415);
-            trackBar1.TabIndex = 4;
+            imageSlider.AutoSize = false;
+            imageSlider.BackColor = SystemColors.Control;
+            imageSlider.Location = new Point(462, 23);
+            imageSlider.Name = "imageSlider";
+            imageSlider.Orientation = Orientation.Vertical;
+            imageSlider.RightToLeft = RightToLeft.Yes;
+            imageSlider.Size = new Size(56, 415);
+            imageSlider.TabIndex = 4;
+            imageSlider.ValueChanged += imageSlider_ValueChanged_1;
             // 
             // canvas
             // 
@@ -127,7 +128,7 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)imageSlider).EndInit();
             ((System.ComponentModel.ISupportInitialize)canvas).EndInit();
             ResumeLayout(false);
         }
@@ -139,6 +140,6 @@
         private Button load;
         private TextBox path;
         private PictureBox canvas;
-        private TrackBar trackBar1;
+        private TrackBar imageSlider;
     }
 }

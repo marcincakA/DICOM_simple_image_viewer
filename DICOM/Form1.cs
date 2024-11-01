@@ -9,6 +9,7 @@ using System.Diagnostics;
 using DICOM;
 using FellowOakDicom;
 using FellowOakDicom.Imaging;
+using System;
 
 namespace DICOM
 {
@@ -36,12 +37,12 @@ namespace DICOM
 
         private void browseButton_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
             {
-                openFileDialog.FileName = "Select a DICOM files folder";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                folderBrowserDialog.Description = "Select a DICOM files folder";
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                 {
-                    path.Text = openFileDialog.FileName;
+                    path.Text = folderBrowserDialog.SelectedPath;
                 }
             }
         }
@@ -49,79 +50,31 @@ namespace DICOM
         private void load_Click(object sender, EventArgs e)
         {
             string folderPath = path.Text;
-            
+            dicomFilePaths = Directory.GetFiles(folderPath, "*.dcm").ToList();
 
-            if (File.Exists(filePath) && (Path.GetExtension(filePath).Equals(".dcm", StringComparison.OrdinalIgnoreCase) || 
-                Path.GetExtension(filePath).Equals(".dicom", StringComparison.OrdinalIgnoreCase))) 
-            { 
-                try
-                {
-                    LogToDebugConsole($"Attempting to extract information from DICOM file:{filePath}...");
+            if (dicomFilePaths.Count > 0)
+            {
+                // Update slider to reflect the number of images
+                imageSlider.Maximum = dicomFilePaths.Count - 1;
+                currentImageIndex = 0;
 
-                    var file = DicomFile.Open(filePath);
-                    foreach (var tag in file.Dataset)
-                    {
-                        LogToDebugConsole($" {tag} '{file.Dataset.GetValueOrDefault(tag.Tag, 0, "")}'");
-                    }
-                    var dicomImage = new DicomImage(file.Dataset).RenderImage().As<Bitmap>();
+                // Display the first image
+                DisplayImage(currentImageIndex);
+            }
+        }
 
-                    canvas.Image = (Image)dicomImage;
-
-
-                    LogToDebugConsole($"Extract operation from DICOM file successful");
-
-                    //var dcm = EvilDICOM.Core.DICOMObject.Read(filePath);
-                    //string photo = dcm.FindFirst(TagHelper.PhotometricInterpretation).DData.ToString();
-                    //ushort bitsAllocated = (ushort)dcm.FindFirst(TagHelper.BitsAllocated).DData;
-                    //ushort highBit = (ushort)dcm.FindFirst(TagHelper.HighBit).DData;
-                    //ushort bitsStored = (ushort)dcm.FindFirst(TagHelper.BitsStored).DData;
-                    //ushort rows = (ushort)dcm.FindFirst(TagHelper.Rows).DData;
-                    //ushort colums = (ushort)dcm.FindFirst(TagHelper.Columns).DData;
-                    //ushort pixelRepresentation = (ushort)dcm.FindFirst(TagHelper.PixelRepresentation).DData;
-                    //List<byte> pixelData = (List<byte>)dcm.FindFirst(TagHelper.PixelData).DData_;
-                    //List<byte> pixelDataUpdated = (List<byte>)dcm.FindFirst(TagHelper.PixelData).DData_;
-                    //int windowWidth = Convert.ToInt32(dcm.FindFirst(TagHelper.WindowWidth).DData);
-                    //int windowCenter = Convert.ToInt32(dcm.FindFirst(TagHelper.WindowCenter).DData);
-                    //ushort bitsPerPixel = (ushort)dcm.FindFirst(TagHelper.BitsStored).DData;
-                    //int minVal = 0;
-                    //int maxVal = 255;
-                    //int index = 0;
-
-                    //for (int i = 0; i < pixelData.Count; i++)
-                    //{
-                    //    int adjustedValue;
-                    //    if(bitsPerPixel == 8)
-                    //    {
-                    //        adjustedValue = (pixelData[i] - windowCenter + (windowWidth / 2)) * 255 / windowWidth;
-                    //    }
-
-                    //    else if(bitsPerPixel == 12)
-                    //    {
-                    //        adjustedValue = (pixelData[i] - windowCenter + (windowWidth / 2)) * 4095 / windowWidth;
-                    //    }
-
-                    //    else
-                    //    {
-                    //        adjustedValue = (pixelData[i] - windowCenter + (windowWidth / 2)) * 65535 / windowWidth;
-                    //    }
-                    //    pixelDataUpdated[i] = (byte)Math.Clamp(adjustedValue, 0, 255);
-                    //}
-
-                    //Bitmap bmap = this.createBitmap(colums, rows, bitsAllocated, pixelDataUpdated.ToArray());
-                    //Image img = bmap;
-                    //canvas.Image = img;
-
-                }
-
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: " + ex.Message, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+        private void DisplayImage(int index)
+        {
+            if(dicomFilePaths == null || dicomFilePaths.Count == 0)
+            {
+                return;
             }
 
-            else
+            if (index >= 0 && index < dicomFilePaths.Count)
             {
-                MessageBox.Show("Please select a valid PNG file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var file = DicomFile.Open(dicomFilePaths[index]);
+                var dicomImage = new DicomImage(file.Dataset).RenderImage().As<Bitmap>();
+                canvas.Image = (Image)dicomImage;
             }
         }
 
@@ -178,6 +131,12 @@ namespace DICOM
         private void canvas_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void imageSlider_ValueChanged_1(object sender, EventArgs e)
+        {
+            currentImageIndex = imageSlider.Value;
+            DisplayImage(currentImageIndex);
         }
     }
 }
