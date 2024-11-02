@@ -17,8 +17,6 @@ namespace DICOM
     public partial class Form1 : Form
     {
         private string fileName;
-        private List<string> dicomFilePaths;
-        private int currentImageIndex = 0;
         private FullSizedPicture fullSizedPicture;
 
         public Form1()
@@ -27,122 +25,77 @@ namespace DICOM
             this.fullSizedPicture = new FullSizedPicture();
         }
 
-        private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-
         private void browseButton_Click(object sender, EventArgs e)
         {
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            // Update to use OpenFileDialog for a single file selection
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "DICOM files (*.dcm)|*.dcm";
+            openFileDialog.Title = "Select a DICOM file";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                folderBrowserDialog.Description = "Select a DICOM files folder";
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    path.Text = folderBrowserDialog.SelectedPath;
-                }
+                path.Text = openFileDialog.FileName; // Store the selected file path
             }
         }
 
         private void load_Click(object sender, EventArgs e)
         {
-            string folderPath = path.Text;
-            dicomFilePaths = Directory.GetFiles(folderPath, "*.dcm").ToList();
+            string filePath = path.Text;
 
-            if (dicomFilePaths.Count > 0)
+            if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
             {
-                // Update slider to reflect the number of images
-                imageSlider.Maximum = dicomFilePaths.Count - 1;
-                currentImageIndex = 0;
-
-                // Display the first image
-                DisplayDescription(currentImageIndex);
-                DisplayImage(currentImageIndex);
+                DisplayDescription(filePath);
+                DisplayImage(filePath);
+            }
+            else
+            {
+                LogToDebugConsole("Invalid file path or file does not exist.");
             }
         }
 
-        private void DisplayDescription(int index)
+        private void DisplayDescription(string filePath)
         {
             imageContext.Text = "";
-            if (dicomFilePaths == null || dicomFilePaths.Count == 0)
+            try
             {
-                return;
-            }
-            if (index >= 0 && index < dicomFilePaths.Count)
-            {
+                var file = DicomFile.Open(filePath);
                 string text = "";
-                try
-                {
-                var file = DicomFile.Open(dicomFilePaths[index]);
+
                 foreach (var tag in file.Dataset)
                 {
                     text += ($" {tag}: '{file.Dataset.GetValueOrDefault(tag.Tag, 0, "")}'\n");
                 }
+
                 imageContext.Text = text;
-                }
-                catch (Exception e)
-                {
-                    LogToDebugConsole($"Error displaying image: {e.Message}");
-                }
+            }
+            catch (Exception e)
+            {
+                LogToDebugConsole($"Error displaying description: {e.Message}");
             }
         }
 
-        private void DisplayImage(int index)
+        private void DisplayImage(string filePath)
         {
-            if(dicomFilePaths == null || dicomFilePaths.Count == 0)
+            try
             {
-                return;
+                var file = DicomFile.Open(filePath);
+                var dicomImage = new DicomImage(file.Dataset).RenderImage().As<Bitmap>();
+                this.fullSizedPicture.SetImage(dicomImage);
+
+                if (!fullSizedPicture.Visible)
+                {
+                    fullSizedPicture.Show();
+                }
             }
-
-            if (index >= 0 && index < dicomFilePaths.Count)
+            catch (Exception e)
             {
-                try
-                {
-                    var file = DicomFile.Open(dicomFilePaths[index]);
-                    var dicomImage = new DicomImage(file.Dataset).RenderImage().As<Bitmap>();
-                    this.fullSizedPicture.SetImage(dicomImage);
-                    if (!fullSizedPicture.Visible)
-                    {
-                        fullSizedPicture.Show();
-
-                    }
-                }
-                catch (Exception e)
-                {
-                    LogToDebugConsole($"Error displaying image: {e.Message}");
-                }
-                
+                LogToDebugConsole($"Error displaying image: {e.Message}");
             }
         }
 
         private static void LogToDebugConsole(string informationToLog)
         {
             Debug.WriteLine(informationToLog);
-        }
-
-        private void path_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void canvas_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void imageSlider_ValueChanged_1(object sender, EventArgs e)
-        {
-            imageSlider.Enabled = false;
-            currentImageIndex = imageSlider.Value;
-            DisplayImage(currentImageIndex);
-            DisplayDescription(currentImageIndex);
-            imageSlider.Enabled = true;
         }
     }
 }

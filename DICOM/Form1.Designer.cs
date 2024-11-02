@@ -32,13 +32,11 @@
             path = new TextBox();
             load = new Button();
             browseButton = new Button();
-            imageSlider = new TrackBar();
             imageContext = new RichTextBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)imageSlider).BeginInit();
             SuspendLayout();
             // 
             // splitContainer1
@@ -52,13 +50,10 @@
             splitContainer1.Panel1.Controls.Add(path);
             splitContainer1.Panel1.Controls.Add(load);
             splitContainer1.Panel1.Controls.Add(browseButton);
-            splitContainer1.Panel1.Paint += splitContainer1_Panel1_Paint;
             // 
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(imageContext);
-            splitContainer1.Panel2.Controls.Add(imageSlider);
-            splitContainer1.Panel2.Paint += splitContainer1_Panel2_Paint;
             splitContainer1.Size = new Size(800, 450);
             splitContainer1.SplitterDistance = 266;
             splitContainer1.TabIndex = 0;
@@ -70,7 +65,6 @@
             path.Size = new Size(191, 27);
             path.TabIndex = 3;
             path.Text = "C:\\Users\\marci\\source\\repos\\DICOM\\DICOM\\series-00000";
-            path.TextChanged += path_TextChanged;
             // 
             // load
             // 
@@ -92,23 +86,11 @@
             browseButton.UseVisualStyleBackColor = true;
             browseButton.Click += browseButton_Click;
             // 
-            // imageSlider
-            // 
-            imageSlider.AutoSize = false;
-            imageSlider.BackColor = SystemColors.Control;
-            imageSlider.Location = new Point(462, 23);
-            imageSlider.Name = "imageSlider";
-            imageSlider.Orientation = Orientation.Vertical;
-            imageSlider.RightToLeft = RightToLeft.Yes;
-            imageSlider.Size = new Size(56, 415);
-            imageSlider.TabIndex = 4;
-            imageSlider.ValueChanged += imageSlider_ValueChanged_1;
-            // 
             // imageContext
             // 
             imageContext.Location = new Point(37, 33);
             imageContext.Name = "imageContext";
-            imageContext.Size = new Size(402, 387);
+            imageContext.Size = new Size(463, 387);
             imageContext.TabIndex = 5;
             imageContext.Text = "";
             // 
@@ -125,7 +107,6 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)imageSlider).EndInit();
             ResumeLayout(false);
         }
 
@@ -135,7 +116,6 @@
         private Button browseButton;
         private Button load;
         private TextBox path;
-        private TrackBar imageSlider;
         private RichTextBox imageContext;
     }
 }
