@@ -28,18 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
+            pictureBoxFullImage = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxFullImage).BeginInit();
             SuspendLayout();
+            // 
+            // pictureBoxFullImage
+            // 
+            pictureBoxFullImage.Dock = DockStyle.Fill;
+            pictureBoxFullImage.Location = new Point(0, 0);
+            pictureBoxFullImage.Name = "pictureBoxFullImage";
+            pictureBoxFullImage.Size = new Size(800, 450);
+            pictureBoxFullImage.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBoxFullImage.TabIndex = 0;
+            pictureBoxFullImage.TabStop = false;
             // 
             // FullSizedPicture
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(pictureBoxFullImage);
             Name = "FullSizedPicture";
             Text = "Form2";
+            ((System.ComponentModel.ISupportInitialize)pictureBoxFullImage).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
+
+        private PictureBox pictureBoxFullImage;
     }
 }

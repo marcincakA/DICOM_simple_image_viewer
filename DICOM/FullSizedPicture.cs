@@ -16,5 +16,12 @@ namespace DICOM
         {
             InitializeComponent();
         }
+
+        public void SetImage(Image image)
+        {
+            pictureBoxFullImage.Image = image;
+            pictureBoxFullImage.SizeMode = PictureBoxSizeMode.Zoom;
+            this.ClientSize = new Size(image.Width, image.Height);
+        }
     }
 }

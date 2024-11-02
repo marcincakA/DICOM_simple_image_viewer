@@ -18,10 +18,12 @@ namespace DICOM
         private string fileName;
         private List<string> dicomFilePaths;
         private int currentImageIndex = 0;
+        private FullSizedPicture fullSizedPicture;
 
         public Form1()
         {
             InitializeComponent();
+            this.fullSizedPicture = new FullSizedPicture();
         }
 
         private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
@@ -75,6 +77,11 @@ namespace DICOM
                 var file = DicomFile.Open(dicomFilePaths[index]);
                 var dicomImage = new DicomImage(file.Dataset).RenderImage().As<Bitmap>();
                 canvas.Image = (Image)dicomImage;
+                this.fullSizedPicture.SetImage(dicomImage);
+                if(!fullSizedPicture.Visible)
+                {
+                    fullSizedPicture.Show();
+                }
             }
         }
 
