@@ -33,13 +33,12 @@
             load = new Button();
             browseButton = new Button();
             imageSlider = new TrackBar();
-            canvas = new PictureBox();
+            imageContext = new RichTextBox();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)imageSlider).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)canvas).BeginInit();
             SuspendLayout();
             // 
             // splitContainer1
@@ -57,8 +56,8 @@
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(imageContext);
             splitContainer1.Panel2.Controls.Add(imageSlider);
-            splitContainer1.Panel2.Controls.Add(canvas);
             splitContainer1.Panel2.Paint += splitContainer1_Panel2_Paint;
             splitContainer1.Size = new Size(800, 450);
             splitContainer1.SplitterDistance = 266;
@@ -105,15 +104,13 @@
             imageSlider.TabIndex = 4;
             imageSlider.ValueChanged += imageSlider_ValueChanged_1;
             // 
-            // canvas
+            // imageContext
             // 
-            canvas.Dock = DockStyle.Fill;
-            canvas.Location = new Point(0, 0);
-            canvas.Name = "canvas";
-            canvas.Size = new Size(530, 450);
-            canvas.TabIndex = 0;
-            canvas.TabStop = false;
-            canvas.Click += canvas_Click;
+            imageContext.Location = new Point(37, 33);
+            imageContext.Name = "imageContext";
+            imageContext.Size = new Size(402, 387);
+            imageContext.TabIndex = 5;
+            imageContext.Text = "";
             // 
             // Form1
             // 
@@ -129,7 +126,6 @@
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)imageSlider).EndInit();
-            ((System.ComponentModel.ISupportInitialize)canvas).EndInit();
             ResumeLayout(false);
         }
 
@@ -139,7 +135,7 @@
         private Button browseButton;
         private Button load;
         private TextBox path;
-        private PictureBox canvas;
         private TrackBar imageSlider;
+        private RichTextBox imageContext;
     }
 }

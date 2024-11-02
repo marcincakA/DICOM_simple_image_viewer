@@ -10,6 +10,7 @@ using DICOM;
 using FellowOakDicom;
 using FellowOakDicom.Imaging;
 using System;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace DICOM
 {
@@ -61,7 +62,34 @@ namespace DICOM
                 currentImageIndex = 0;
 
                 // Display the first image
+                DisplayDescription(currentImageIndex);
                 DisplayImage(currentImageIndex);
+            }
+        }
+
+        private void DisplayDescription(int index)
+        {
+            imageContext.Text = "";
+            if (dicomFilePaths == null || dicomFilePaths.Count == 0)
+            {
+                return;
+            }
+            if (index >= 0 && index < dicomFilePaths.Count)
+            {
+                string text = "";
+                try
+                {
+                var file = DicomFile.Open(dicomFilePaths[index]);
+                foreach (var tag in file.Dataset)
+                {
+                    text += ($" {tag}: '{file.Dataset.GetValueOrDefault(tag.Tag, 0, "")}'\n");
+                }
+                imageContext.Text = text;
+                }
+                catch (Exception e)
+                {
+                    LogToDebugConsole($"Error displaying image: {e.Message}");
+                }
             }
         }
 
@@ -74,60 +102,28 @@ namespace DICOM
 
             if (index >= 0 && index < dicomFilePaths.Count)
             {
-                var file = DicomFile.Open(dicomFilePaths[index]);
-                var dicomImage = new DicomImage(file.Dataset).RenderImage().As<Bitmap>();
-                canvas.Image = (Image)dicomImage;
-                this.fullSizedPicture.SetImage(dicomImage);
-                if(!fullSizedPicture.Visible)
+                try
                 {
-                    fullSizedPicture.Show();
+                    var file = DicomFile.Open(dicomFilePaths[index]);
+                    var dicomImage = new DicomImage(file.Dataset).RenderImage().As<Bitmap>();
+                    this.fullSizedPicture.SetImage(dicomImage);
+                    if (!fullSizedPicture.Visible)
+                    {
+                        fullSizedPicture.Show();
+
+                    }
                 }
+                catch (Exception e)
+                {
+                    LogToDebugConsole($"Error displaying image: {e.Message}");
+                }
+                
             }
         }
 
         private static void LogToDebugConsole(string informationToLog)
         {
             Debug.WriteLine(informationToLog);
-        }
-
-        public Bitmap createBitmap(int width, int height, ushort bitsAllocated, byte[] pixelData)
-        {
-            Bitmap bitmap;
-
-            if (bitsAllocated == 8)
-            {
-                // Create an 8-bit grayscale bitmap
-                bitmap = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-
-                // Set grayscale color palette
-                ColorPalette palette = bitmap.Palette;
-                for (int i = 0; i < 256; i++)
-                {
-                    palette.Entries[i] = Color.FromArgb(i, i, i);
-                }
-                bitmap.Palette = palette;
-
-                // Lock the bitmap data for direct access
-                BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
-
-                // Copy pixel data into the bitmap
-                System.Runtime.InteropServices.Marshal.Copy(pixelData, 0, bmpData.Scan0, pixelData.Length);
-
-                bitmap.UnlockBits(bmpData);
-                return bitmap;
-            }
-            else if (bitsAllocated == 16)
-            {
-                // Create a 16-bit grayscale bitmap (not directly supported by Bitmap, so adjust)
-                bitmap = new Bitmap(width, height, PixelFormat.Format16bppGrayScale);
-
-                // Copy 16-bit pixel data (convert ushort array as needed)
-                BitmapData bmpData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format16bppGrayScale);
-                System.Runtime.InteropServices.Marshal.Copy(pixelData, 0, bmpData.Scan0, pixelData.Length);
-                bitmap.UnlockBits(bmpData);
-                return bitmap;
-            }
-            return null;
         }
 
         private void path_TextChanged(object sender, EventArgs e)
@@ -142,8 +138,11 @@ namespace DICOM
 
         private void imageSlider_ValueChanged_1(object sender, EventArgs e)
         {
+            imageSlider.Enabled = false;
             currentImageIndex = imageSlider.Value;
             DisplayImage(currentImageIndex);
+            DisplayDescription(currentImageIndex);
+            imageSlider.Enabled = true;
         }
     }
 }
